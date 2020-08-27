@@ -7,9 +7,9 @@ on:
   pull_request_target:
     types: [opened, synchronize, reopened] #default types
 jobs:
-  env:
-    PR: ${{ github.event.number}}
   regression:
+    env:
+      PR: ${{ github.event.number}}
     # Check if the event is not triggered by a fork, this is stupid but its github
     if: github.ref != 'refs/heads/master'
     runs-on: ubuntu-latest
