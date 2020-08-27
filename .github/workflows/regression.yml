@@ -7,6 +7,8 @@ on:
   pull_request_target:
     types: [opened, synchronize, reopened] #default types
 jobs:
+  env:
+    PR: ${{ github.event.number}}
   regression:
     # Check if the event is not triggered by a fork, this is stupid but its github
     if: github.ref != 'refs/heads/master'
@@ -41,14 +43,16 @@ jobs:
       id: findPr
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-    - run: echo ${{ steps.findPr.outputs.pr }}
+      if: github.event_name  == 'push' && success() && steps.findPr.outputs.pr
+      env:
+        PR: ${{ steps.findPr.outputs.number }}
 
     - name: Find Comment
       uses: peter-evans/find-comment@v1
       id: fc
       with:
         repository: 'abaplint/abaplint'
-        issue-number: '${{steps.findPr.outputs.pr}}'
+        issue-number: '${{PR}}'
         body-includes: Regression test results
     - run: echo ${{ steps.fc.outputs.comment-id }}
 
@@ -66,7 +70,7 @@ jobs:
       uses: peter-evans/create-or-update-comment@v1
       id: create-comment
       with:
-        issue-number: '${{steps.findPr.outputs.pr}}'
+        issue-number: '${{PR}}'
         edit-mode: replace
         comment-id: '${{steps.fc.outputs.comment-id}}'
         body: ${{steps.get-comment-body.outputs.body}}
