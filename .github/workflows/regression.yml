@@ -52,7 +52,7 @@ jobs:
       id: fc
       with:
         repository: 'abaplint/abaplint'
-        issue-number: '${{PR}}'
+        issue-number: '$PR'
         body-includes: Regression test results
     - run: echo ${{ steps.fc.outputs.comment-id }}
 
@@ -70,7 +70,7 @@ jobs:
       uses: peter-evans/create-or-update-comment@v1
       id: create-comment
       with:
-        issue-number: '${{PR}}'
+        issue-number: '$PR'
         edit-mode: replace
         comment-id: '${{steps.fc.outputs.comment-id}}'
         body: ${{steps.get-comment-body.outputs.body}}
